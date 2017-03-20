@@ -34,6 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -43,6 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Algorithms\LaplaceOperator.cs" />
+    <Compile Include="Algorithms\SobelOperator.cs" />
+    <Compile Include="Algorithms\RobertsCross.cs" />
+    <Compile Include="Algorithms\Canny.cs" />
+    <Compile Include="Data\FileManager.cs" />
+    <Compile Include="Interfaces\IAlgorithm.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
