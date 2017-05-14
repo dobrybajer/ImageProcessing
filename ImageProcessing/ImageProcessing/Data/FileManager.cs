@@ -53,6 +53,7 @@
                 File.WriteAllText(logFilePath, log);
                 Console.WriteLine(log);
 
+                Console.WriteLine("\rSaving processed images... please wait...");
                 foreach (var image in output.Images)
                 {
                     foreach (var processedImages in output.Data)
@@ -62,6 +63,7 @@
                         processedImage.Save(outputFolderPath + $"\\{processedImages.Key}_{image.Key}");
                     }
                 }
+                Console.WriteLine("\rAll processed images saved properly.");
             }
             catch (Exception e)
             {
