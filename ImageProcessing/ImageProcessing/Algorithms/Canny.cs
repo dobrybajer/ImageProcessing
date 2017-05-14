@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ImageProcessing.Interfaces;
-
-namespace ImageProcessing.Algorithms
+﻿namespace ImageProcessing.Algorithms
 {
-    internal class Canny : IAlgorithm
+    using System.Drawing;
+    
+    using Model;
+
+    internal class Canny : BaseAlgorithm
     {
-        public void ProcessImage(string path)
+        public Canny() : base(AlgorithmType.Canny) { }
+
+        public override Bitmap ProcessImage(Bitmap image)
         {
-            throw new NotImplementedException();
+            var newImage = new Bitmap(image);
+            
+            return newImage;
         }
     }
 }

@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ImageProcessing.Interfaces;
-
-namespace ImageProcessing.Algorithms
+﻿namespace ImageProcessing.Algorithms
 {
-    internal class RobertsCross : IAlgorithm
+    using System.Drawing;
+
+    using Model;
+
+    internal class RobertsCross : BaseAlgorithm
     {
-        public void ProcessImage(string path)
+        public RobertsCross() : base(AlgorithmType.RobertsCross) { }
+
+        public override Bitmap ProcessImage(Bitmap image)
         {
-            throw new NotImplementedException();
+            var newImage = new Bitmap(image);
+
+            return newImage;
         }
     }
 }
