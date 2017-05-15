@@ -11,7 +11,7 @@
         public override Bitmap ProcessImage(Bitmap image)
         {
             var newImage = new Bitmap(image);
-            // TODO by Łukasz
+            // TODO by Kamil
             return newImage;
         }
     }
