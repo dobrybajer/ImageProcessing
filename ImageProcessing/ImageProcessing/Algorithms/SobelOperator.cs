@@ -4,22 +4,52 @@
 
     using Model;
 
-    /// <summary>
-    /// More details: https://blog.saush.com/2011/04/20/edge-detection-with-the-sobel-operator-in-ruby/
-    /// </summary>
     internal class SobelOperator : BaseAlgorithm
     {
-        private const int MagnitudeLimit = 128 * 128;
+        #region Private Fields
 
-        public SobelOperator() : base(AlgorithmType.SobelOperator) { }
+        private const int MagnitudeLimit = 128 * 128;
+        private readonly bool _useGrayScale;
+
+        #endregion
+        
+        #region Constructors 
+
+        public SobelOperator(bool useGrayScale = true) : base(AlgorithmType.SobelOperator)
+        {
+            _useGrayScale = useGrayScale;
+            Kernel1 = new double[,]
+            {
+                {1, 0, -1},
+                {2, 0, -2},
+                {1, 0, -1}
+            };
+
+            Kernel2 = new double[,]
+            {
+                {1, 2, 1},
+                {0, 0, 0},
+                {-1, -2, -1}
+            };
+        }
+
+        #endregion
+
+        #region Public Methods
 
         /// <summary>
-        /// In this algorithm rather than firstly changing original image to gray scale, I consider all RGB values separately
+        /// In this version of algorithm rather than firstly changing original image to gray scale, I consider all RGB values separately
+        /// More details: https://blog.saush.com/2011/04/20/edge-detection-with-the-sobel-operator-in-ruby/
         /// </summary>
-        /// <param name="image">Original mage</param>
+        /// <param name="image">Original image</param>
         /// <returns>Processed image in white and black colors.</returns>
         public override Bitmap ProcessImage(Bitmap image)
         {
+            if (_useGrayScale)
+            {
+                return ProcessImageGrayScale(image);
+            }
+
             var processedImage = new Bitmap(image);
             var outputImage = new Bitmap(image);
 
@@ -94,5 +124,7 @@
 
             return outputImage;
         }
+
+        #endregion
     }
 }

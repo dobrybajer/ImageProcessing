@@ -1,0 +1,5 @@
+1. Add avg time for every processed image
+2. Add possibility to choose 1 of six laplassian filters
+3. Add percentege of edge pixels for every file/algorithm
+4. Change code for sobel all chanels version - make it faster
+5. Add color version (all channels) for Laplace and Roberts Cross OR make it Black/White version

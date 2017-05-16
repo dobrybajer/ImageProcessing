@@ -6,13 +6,34 @@
 
     internal class RobertsCross : BaseAlgorithm
     {
-        public RobertsCross() : base(AlgorithmType.RobertsCross) { }
+        #region Constructors 
+
+        public RobertsCross() : base(AlgorithmType.RobertsCross)
+        {
+            Kernel1 = new double[,]
+            {
+                {0, 0, 0},
+                {0, 1, 0},
+                {0, 0, -1}
+            };
+
+            Kernel2 = new double[,]
+            {
+                {0, 0, 0},
+                {0, 1, 0},
+                {-1, 0, 0}
+            };
+        }
+
+        #endregion
+
+        #region Public Methods
 
         public override Bitmap ProcessImage(Bitmap image)
         {
-            var newImage = new Bitmap(image);
-            // TODO by Kamil
-            return newImage;
+            return ProcessImageGrayScale(image);
         }
+
+        #endregion
     }
 }

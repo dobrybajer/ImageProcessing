@@ -47,6 +47,7 @@
     <Compile Include="Data\FileManager.cs" />
     <Compile Include="Model\AlgorithmOutputData.cs" />
     <Compile Include="Model\AlgorithmType.cs" />
+    <Compile Include="Model\BitmapData.cs" />
     <Compile Include="Model\OutputData.cs" />
     <Compile Include="Model\InputData.cs" />
     <Compile Include="Program.cs" />

@@ -37,6 +37,8 @@
                 log += Environment.NewLine;
             }
 
+            // TODO add avg time for every processed image
+
             return log;
         }
 
