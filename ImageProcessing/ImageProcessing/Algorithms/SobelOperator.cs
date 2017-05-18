@@ -8,7 +8,6 @@
     {
         #region Private Fields
 
-        private const int MagnitudeLimit = 128 * 128;
         private readonly bool _useGrayScale;
 
         #endregion
@@ -115,9 +114,9 @@
 
                     // If magnitude is higher than defined limit - this is a edge pixel
                     outputImage.SetPixel(i, j,
-                        newRx*newRx + newRy*newRy > MagnitudeLimit ||
-                        newGx*newGx + newGy*newGy > MagnitudeLimit ||
-                        newBx*newBx + newBy*newBy > MagnitudeLimit
+                        newRx*newRx + newRy*newRy > MagnitudeLimit*MagnitudeLimit ||
+                        newGx*newGx + newGy*newGy > MagnitudeLimit*MagnitudeLimit ||
+                        newBx*newBx + newBy*newBy > MagnitudeLimit*MagnitudeLimit
                             ? Color.Black : Color.White);
                 }
             }

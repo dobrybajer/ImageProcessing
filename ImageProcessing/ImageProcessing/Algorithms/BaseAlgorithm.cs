@@ -11,6 +11,8 @@
     {
         #region Private Properties
 
+        private int _numberOfEdgePixels;
+
         private readonly AlgorithmType _type;
 
         private bool UseOnlyFirstKernel => Kernel2 == null;
@@ -18,6 +20,8 @@
         #endregion
 
         #region Protected Properties
+
+        protected const int MagnitudeLimit = 32;
 
         protected double[,] Kernel1 { get; set; }
 
@@ -44,12 +48,16 @@
                 Console.CursorLeft = 0;
                 Console.Write($"{_type}: {count++/input.Images.Count*100}%");
 
+                _numberOfEdgePixels = 0;
+
                 var stopwatch = Stopwatch.StartNew();
                 var processedImage = ProcessImage(image.Value);
                 stopwatch.Stop();
 
                 output.Data[_type].Images.Add(image.Key, processedImage);
                 output.Data[_type].ExecutionTime.Add(image.Key, stopwatch.ElapsedMilliseconds);
+                output.Data[_type].EdgePixelsPercentage.Add(image.Key,
+                    _numberOfEdgePixels/(double)(image.Value.Width*image.Value.Height));
             }
 
             Console.WriteLine(" ");
@@ -87,7 +95,7 @@
                     {
                         for (var x = 1; x < image.Width - 1; x++)
                         {
-                            MakeConvolutionWithPixel(originBitmapData, rgbValues, x, y);
+                            _numberOfEdgePixels += MakeConvolutionWithPixel(originBitmapData, rgbValues, x, y);
                         }
                     }
 
@@ -182,7 +190,7 @@
             return null;
         }
 
-        protected void MakeConvolutionWithPixel(BitmapData srcData, byte[] dst, int x, int y)
+        protected int MakeConvolutionWithPixel(BitmapData srcData, byte[] dst, int x, int y)
         {
             double finalX = 0, finalY = 0;
 
@@ -208,9 +216,25 @@
                 (byte)Clamp(Math.Sqrt(finalX * finalX + finalY * finalY), 0, 255.0);
 
             var currentPixelPos = (y * srcData.Width + x) * srcData.BytesPerPixel;
+
+            //if (clampedValue > MagnitudeLimit)
+            //{
+            //    dst[currentPixelPos] = Color.Black.R;
+            //    dst[currentPixelPos + 1] = Color.Black.G;
+            //    dst[currentPixelPos + 2] = Color.Black.B;
+            //}
+            //else
+            //{
+            //    dst[currentPixelPos] = Color.White.R;
+            //    dst[currentPixelPos + 1] = Color.White.G;
+            //    dst[currentPixelPos + 2] = Color.White.B;
+            //}
+
             dst[currentPixelPos] = clampedValue;
             dst[currentPixelPos + 1] = clampedValue;
             dst[currentPixelPos + 2] = clampedValue;
+
+            return clampedValue > MagnitudeLimit ? 1 : 0;
         }
 
         #endregion

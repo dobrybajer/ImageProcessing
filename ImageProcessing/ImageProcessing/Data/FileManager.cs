@@ -56,12 +56,25 @@
                 Console.WriteLine("\rSaving processed images... please wait...");
                 foreach (var image in output.Images)
                 {
-                    foreach (var processedImages in output.Data)
+                    var width = image.Value.Width;
+                    var height = image.Value.Height;
+
+                    var finalImage = new Bitmap(width*2, height*2);
+               
+                    using (var g = Graphics.FromImage(finalImage))
                     {
-                        var values = processedImages.Value;
-                        var processedImage = values.Images[image.Key];
-                        processedImage.Save(outputFolderPath + $"\\{processedImages.Key}_{image.Key}");
+                        var cannyImage = ImageManager.GetBitmapFromOutputData(output, AlgorithmType.Canny, image.Key, width, height);
+                        var laplaceImage = ImageManager.GetBitmapFromOutputData(output, AlgorithmType.LaplaceOperator, image.Key, width, height);
+                        var robertsImage = ImageManager.GetBitmapFromOutputData(output, AlgorithmType.RobertsCross, image.Key, width, height);
+                        var sobelImage = ImageManager.GetBitmapFromOutputData(output, AlgorithmType.SobelOperator, image.Key, width, height);
+
+                        g.DrawImage(cannyImage, 0, 0);
+                        g.DrawImage(laplaceImage, width, 0);
+                        g.DrawImage(robertsImage, 0, height);
+                        g.DrawImage(sobelImage, width, height);
                     }
+
+                    finalImage.Save(outputFolderPath + $"\\processed_{image.Key}");
                 }
                 Console.WriteLine("\rAll processed images saved properly.");
             }

@@ -10,9 +10,8 @@
 
         public override Bitmap ProcessImage(Bitmap image)
         {
-            var newImage = new Bitmap(image);
-            // TODO by Łukasz
-            return newImage;
+            //// TODO by Łukasz
+            return base.ProcessImage(image);
         }
     }
 }

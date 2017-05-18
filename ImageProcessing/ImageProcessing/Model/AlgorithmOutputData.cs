@@ -7,11 +7,13 @@
     {
         public Dictionary<string, Bitmap> Images { get; set; }
         public Dictionary<string, long> ExecutionTime { get; set; }
-
+        public Dictionary<string, double> EdgePixelsPercentage { get; set; }
+        
         public AlgorithmOutputData()
         {
             Images = new Dictionary<string, Bitmap>();
             ExecutionTime = new Dictionary<string, long>();
+            EdgePixelsPercentage = new Dictionary<string, double>();
         }
     }
 }

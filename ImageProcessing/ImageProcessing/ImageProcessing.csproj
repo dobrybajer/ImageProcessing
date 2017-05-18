@@ -45,6 +45,7 @@
     <Compile Include="Algorithms\RobertsCross.cs" />
     <Compile Include="Algorithms\Canny.cs" />
     <Compile Include="Data\FileManager.cs" />
+    <Compile Include="Data\ImageManager.cs" />
     <Compile Include="Model\AlgorithmOutputData.cs" />
     <Compile Include="Model\AlgorithmType.cs" />
     <Compile Include="Model\BitmapData.cs" />
