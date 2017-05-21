@@ -68,7 +68,8 @@ namespace ImageProcessing.Algorithms
                     var gyVal = imageWithDifferentiatey[i, j];
 
                     gradientImage[i, j] = (int) Math.Sqrt(gxVal*gxVal + gyVal*gyVal);
-                    angleImage[i, j] = (short) Math.Atan2(gxVal, gyVal);
+                    var radians =  Math.Atan2(gxVal, gyVal);
+                    angleImage[i, j] = (int) (radians*(180/Math.PI));
                 }
             }
 
@@ -77,10 +78,16 @@ namespace ImageProcessing.Algorithms
             var grad_border = new int[imageWithDifferentiatex.GetLength(0), imageWithDifferentiatex.GetLength(1)];
             var rows = gradientImage.GetLength(0);
             var cols = gradientImage.GetLength(1);
-
             var edgeList = new List<Point>();
 
-            float highT = 200, lowT = 50;
+
+
+            for (var i = 0; i < grad_border.GetLength(0); i++)
+                for (var j = 0; j < grad_border.GetLength(1); j++)
+                    grad_border[i, j] = gradientImage[i, j];
+
+
+                    float highT = 200, lowT = 50;
 
             for (var row = 1; row < rows-1 ; row++)
             {
