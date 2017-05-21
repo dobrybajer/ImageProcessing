@@ -1,1 +1,7 @@
 D:\GitHub\ImageProcessing\ImageProcessing\ImageProcessing\bin\Debug\ImageProcessing.exe.config
+C:\Users\Lukasz\Documents\GitHub\ImageProcessing\ImageProcessing\ImageProcessing\bin\Debug\ImageProcessing.exe.config
+C:\Users\Lukasz\Documents\GitHub\ImageProcessing\ImageProcessing\ImageProcessing\bin\Debug\ImageProcessing.exe
+C:\Users\Lukasz\Documents\GitHub\ImageProcessing\ImageProcessing\ImageProcessing\bin\Debug\ImageProcessing.pdb
+C:\Users\Lukasz\Documents\GitHub\ImageProcessing\ImageProcessing\ImageProcessing\obj\Debug\ImageProcessing.csprojResolveAssemblyReference.cache
+C:\Users\Lukasz\Documents\GitHub\ImageProcessing\ImageProcessing\ImageProcessing\obj\Debug\ImageProcessing.exe
+C:\Users\Lukasz\Documents\GitHub\ImageProcessing\ImageProcessing\ImageProcessing\obj\Debug\ImageProcessing.pdb

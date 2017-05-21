@@ -1,14 +1,33 @@
-﻿namespace ImageProcessing.Algorithms
+﻿using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
+using ImageProcessing.Model;
+using BitmapData = ImageProcessing.Model.BitmapData;
+
+namespace ImageProcessing.Algorithms
 {
-    using System;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.Runtime.InteropServices;
-
-    using Model;
-
     internal class BaseAlgorithm
     {
+        #region Constructors
+
+        public BaseAlgorithm(AlgorithmType type)
+        {
+            _type = type;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static double Clamp(double val, double min, double max)
+        {
+            return val < min ? min : (val > max ? max : val);
+        }
+
+        #endregion
+
         #region Private Properties
 
         private int _numberOfEdgePixels;
@@ -26,15 +45,6 @@
         protected double[,] Kernel1 { get; set; }
 
         protected double[,] Kernel2 { get; set; }
-
-        #endregion
-
-        #region Constructors
-
-        public BaseAlgorithm(AlgorithmType type)
-        {
-            _type = type;
-        }
 
         #endregion
 
@@ -57,7 +67,7 @@
                 output.Data[_type].Images.Add(image.Key, processedImage);
                 output.Data[_type].ExecutionTime.Add(image.Key, stopwatch.ElapsedMilliseconds);
                 output.Data[_type].EdgePixelsPercentage.Add(image.Key,
-                    _numberOfEdgePixels/(double)(image.Value.Width*image.Value.Height));
+                    _numberOfEdgePixels/(double) (image.Value.Width*image.Value.Height));
             }
 
             Console.WriteLine(" ");
@@ -69,8 +79,9 @@
         }
 
         /// <summary>
-        /// This is common algorithm used for: Laplace Operator (LAPL1), Roberts Cross and Sobel Operator.
-        /// In this version firstly original image is changed to gray scale, then processing is made for image bytes rather than exact pixels
+        ///     This is common algorithm used for: Laplace Operator (LAPL1), Roberts Cross and Sobel Operator.
+        ///     In this version firstly original image is changed to gray scale, then processing is made for image bytes rather
+        ///     than exact pixels
         /// </summary>
         /// <param name="image">Original image</param>
         /// <returns>Processed image in real processed colors.</returns>
@@ -81,11 +92,12 @@
                 image = ToGrayScale(image);
                 var originBitmapData = GetByteDataFromBitmap(image);
 
-                var bmData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), System.Drawing.Imaging.ImageLockMode.ReadWrite, image.PixelFormat);
+                var bmData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadWrite,
+                    image.PixelFormat);
 
                 try
                 {
-                    var totalLength = Math.Abs(bmData.Stride) * image.Height;
+                    var totalLength = Math.Abs(bmData.Stride)*image.Height;
                     var rgbValues = new byte[totalLength];
                     var ptr = bmData.Scan0;
 
@@ -120,16 +132,17 @@
             if (bitmap != null)
             {
                 var data = new BitmapData();
-                var bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), System.Drawing.Imaging.ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                var bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite,
+                    bitmap.PixelFormat);
 
                 try
                 {
                     var height = bitmap.Height;
                     var width = bitmap.Width;
                     var stride = bmData.Stride;
-                    var bytesPerPixel = Image.GetPixelFormatSize(bitmap.PixelFormat) / 8;
-                    var offset = stride - width * bytesPerPixel;
-                    var totalLength = Math.Abs(stride) * height;
+                    var bytesPerPixel = Image.GetPixelFormatSize(bitmap.PixelFormat)/8;
+                    var offset = stride - width*bytesPerPixel;
+                    var totalLength = Math.Abs(stride)*height;
                     var ptr = bmData.Scan0;
 
                     var rgbValues = new byte[totalLength];
@@ -155,7 +168,9 @@
                 var grayScaleBitmap = new Bitmap(bitmap.Width, bitmap.Height);
 
                 var data = GetByteDataFromBitmap(bitmap);
-                var dstBmData = grayScaleBitmap.LockBits(new Rectangle(0, 0, grayScaleBitmap.Width, grayScaleBitmap.Height), System.Drawing.Imaging.ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                var dstBmData =
+                    grayScaleBitmap.LockBits(new Rectangle(0, 0, grayScaleBitmap.Width, grayScaleBitmap.Height),
+                        ImageLockMode.ReadWrite, bitmap.PixelFormat);
 
                 try
                 {
@@ -201,21 +216,21 @@
                     var posI = y + i - 1;
                     var posJ = x + j - 1;
 
-                    var pos = (posI * srcData.Width + posJ) * srcData.BytesPerPixel;
+                    var pos = (posI*srcData.Width + posJ)*srcData.BytesPerPixel;
 
-                    finalX += Kernel1[i, j] * srcData.DataBytes[pos];
+                    finalX += Kernel1[i, j]*srcData.DataBytes[pos];
                     if (!UseOnlyFirstKernel)
                     {
-                        finalY += Kernel2[i, j] * srcData.DataBytes[pos];
+                        finalY += Kernel2[i, j]*srcData.DataBytes[pos];
                     }
                 }
             }
 
-            var clampedValue = UseOnlyFirstKernel ? 
-                (byte)Clamp(Math.Abs(finalX), 0, 255.0) : 
-                (byte)Clamp(Math.Sqrt(finalX * finalX + finalY * finalY), 0, 255.0);
+            var clampedValue = UseOnlyFirstKernel
+                ? (byte) Clamp(Math.Abs(finalX), 0, 255.0)
+                : (byte) Clamp(Math.Sqrt(finalX*finalX + finalY*finalY), 0, 255.0);
 
-            var currentPixelPos = (y * srcData.Width + x) * srcData.BytesPerPixel;
+            var currentPixelPos = (y*srcData.Width + x)*srcData.BytesPerPixel;
 
             //if (clampedValue > MagnitudeLimit)
             //{
@@ -235,15 +250,6 @@
             dst[currentPixelPos + 2] = clampedValue;
 
             return clampedValue > MagnitudeLimit ? 1 : 0;
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private static double Clamp(double val, double min, double max)
-        {
-            return val < min ? min : (val > max ? max : val);
         }
 
         #endregion

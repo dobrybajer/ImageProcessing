@@ -1,11 +1,10 @@
-﻿namespace ImageProcessing
+﻿using System;
+using ImageProcessing.Algorithms;
+using ImageProcessing.Data;
+using ImageProcessing.Model;
+
+namespace ImageProcessing
 {
-    using System;
-
-    using Algorithms;
-    using Data;
-    using Model;
-
     internal class Program
     {
         private static void Main()
@@ -19,14 +18,14 @@
             var sobelOperator = new SobelOperator();
 
             canny.ProcessInput(input, output);
-            laplaceOperator.ProcessInput(input, output);
-            robertsCross.ProcessInput(input, output);
-            sobelOperator.ProcessInput(input, output);
+            //laplaceOperator.ProcessInput(input, output);
+            //robertsCross.ProcessInput(input, output);
+            //sobelOperator.ProcessInput(input, output);
 
             Console.WriteLine();
 
             FileManager.WriteOutput(output);
-  
+
             Console.ReadKey();
         }
     }
