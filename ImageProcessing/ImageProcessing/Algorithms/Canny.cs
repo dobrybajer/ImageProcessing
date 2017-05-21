@@ -31,14 +31,7 @@ namespace ImageProcessing.Algorithms
                 {0, 0, 0},
                 {-1, -2, -1}
             };
-            //using (var streamBitmap = new MemoryStream())
-            //{
 
-            //    grayimage.Save("C:\\Users\\Lukasz\\Documents\\GitHub\\ImageProcessing\\ImageProcessing\\ImageProcessing\\obj\\Debug\\TempPE");
-
-            //}
-
-            //grayimage.Save("C:\\Users\\Lukasz\\Documents\\GitHub\\ImageProcessing\\ImageProcessing\\ImageProcessing\\obj\\Debug\\TempPE");
 
             Image grayImage = grayimage;
             grayImage.Save(
@@ -68,7 +61,7 @@ namespace ImageProcessing.Algorithms
                     var gyVal = imageWithDifferentiatey[i, j];
 
                     gradientImage[i, j] = (int) Math.Sqrt(gxVal*gxVal + gyVal*gyVal);
-                    var radians =  Math.Atan2(gxVal, gyVal);
+                    var radians = Math.Atan2(gxVal, gyVal);
                     angleImage[i, j] = (int) (radians*(180/Math.PI));
                 }
             }
@@ -81,17 +74,16 @@ namespace ImageProcessing.Algorithms
             var edgeList = new List<Point>();
 
 
-
             for (var i = 0; i < grad_border.GetLength(0); i++)
                 for (var j = 0; j < grad_border.GetLength(1); j++)
                     grad_border[i, j] = gradientImage[i, j];
 
 
-                    float highT = 200, lowT = 50;
+            float highT = 200, lowT = 50;
 
-            for (var row = 1; row < rows-1 ; row++)
+            for (var row = 1; row < rows - 1; row++)
             {
-                for (var col = 1; col < cols-1 ; col++)
+                for (var col = 1; col < cols - 1; col++)
                 {
                     var angle = angleImage[row - 1, col - 1];
                     var act = new Point(row - 1, col - 1);
@@ -116,6 +108,7 @@ namespace ImageProcessing.Algorithms
                     }
                 }
             }
+            //TODO: Dodać Double thresholding?
 
 
             var tmp = new Bitmap(grayimage);
@@ -123,11 +116,13 @@ namespace ImageProcessing.Algorithms
             for (var i = 0; i < grayimage.Width; i++)
                 for (var j = 0; j < grayimage.Height; j++)
                 {
-                    if (edgeList.Contains(new Point(i, j)))
-                        tmp.SetPixel(i, j, Color.White);
-                    else
-                        tmp.SetPixel(i, j, Color.Black);
+                    tmp.SetPixel(i, j, Color.Black);
                 }
+
+            foreach (var point in edgeList)
+            {
+                tmp.SetPixel(point.Y, point.X, Color.White);
+            }
 
 
             tmp.Save(
