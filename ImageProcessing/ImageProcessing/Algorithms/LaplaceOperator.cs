@@ -8,15 +8,9 @@
     {
         #region Constructors 
 
-        public LaplaceOperator() : base(AlgorithmType.LaplaceOperator)
+        public LaplaceOperator(LaplaceFilterType type = LaplaceFilterType.Lapl1) : base(AlgorithmType.LaplaceOperator)
         {
-            // LAPL1
-            Kernel1 = new double[,]
-            {
-                { 0, -1, 0 },
-                { -1, 4, -1 },
-                { 0, -1, 0 }
-            };
+            Kernel1 = LaplaceFilter.GetLaplaceFilter(type);
         }
 
         #endregion

@@ -5,6 +5,7 @@
     using System.Configuration;
     using System.Diagnostics;
     using System.Drawing;
+    using System.Drawing.Drawing2D;
     using System.IO;
     using System.Linq;
 
@@ -72,6 +73,25 @@
                         g.DrawImage(laplaceImage, width, 0);
                         g.DrawImage(robertsImage, 0, height);
                         g.DrawImage(sobelImage, width, height);
+
+                        var rectLu = new Rectangle(0, 0, width / 4, height / 8);
+                        var rectRu = new Rectangle(width, 0, width / 4, height / 8);
+                        var rectLd = new Rectangle(0, height, width / 4, height / 8);
+                        var rectRd = new Rectangle(width, height, width / 4, height / 8);
+
+                        g.SmoothingMode = SmoothingMode.AntiAlias;
+                        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                        var sf = new StringFormat
+                        {
+                            Alignment = StringAlignment.Center,
+                            LineAlignment = StringAlignment.Center
+                        };
+
+                        g.DrawString("Canny", new Font("Tahoma", 24, FontStyle.Bold), Brushes.Red, rectLu, sf);
+                        g.DrawString("Laplace Operator", new Font("Tahoma", 24, FontStyle.Bold), Brushes.Red, rectRu, sf);
+                        g.DrawString("Roberts Cross", new Font("Tahoma", 24, FontStyle.Bold), Brushes.Red, rectLd, sf);
+                        g.DrawString("Sobel Operator", new Font("Tahoma", 24, FontStyle.Bold), Brushes.Red, rectRd, sf);
                     }
 
                     finalImage.Save(outputFolderPath + $"\\processed_{image.Key}");

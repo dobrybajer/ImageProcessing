@@ -1,4 +1,2 @@
-1. Add possibility to choose 1 of six laplassian filters
-2. Change code for sobel all chanels version - make it faster
-3. Add color version (all channels) for Laplace and Roberts Cross OR make it Black/White version
-4. Add titles of every quarth of final image
+1. Change code for sobel all chanels version - make it faster
+2. Add color version (all channels) for Laplace and Roberts Cross OR make it Black/White version

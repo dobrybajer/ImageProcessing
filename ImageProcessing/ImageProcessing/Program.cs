@@ -19,9 +19,9 @@
             var sobelOperator = new SobelOperator();
 
             canny.ProcessInput(input, output);
-            //laplaceOperator.ProcessInput(input, output);
-            //robertsCross.ProcessInput(input, output);
-            //sobelOperator.ProcessInput(input, output);
+            laplaceOperator.ProcessInput(input, output);
+            robertsCross.ProcessInput(input, output);
+            sobelOperator.ProcessInput(input, output);
 
             Console.WriteLine();
             FileManager.WriteOutput(output);
