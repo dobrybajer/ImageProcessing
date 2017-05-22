@@ -1,10 +1,11 @@
-﻿using System;
-using ImageProcessing.Algorithms;
-using ImageProcessing.Data;
-using ImageProcessing.Model;
-
-namespace ImageProcessing
+﻿namespace ImageProcessing
 {
+    using System;
+
+    using Algorithms;
+    using Data;
+    using Model;
+
     internal class Program
     {
         private static void Main()
@@ -23,9 +24,7 @@ namespace ImageProcessing
             //sobelOperator.ProcessInput(input, output);
 
             Console.WriteLine();
-
             FileManager.WriteOutput(output);
-
             Console.ReadKey();
         }
     }

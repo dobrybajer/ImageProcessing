@@ -1,33 +1,16 @@
-﻿using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
-using ImageProcessing.Model;
-using BitmapData = ImageProcessing.Model.BitmapData;
-
-namespace ImageProcessing.Algorithms
+﻿namespace ImageProcessing.Algorithms
 {
+    using System;
+    using System.Diagnostics;
+    using System.Drawing;
+    using System.Drawing.Imaging;
+    using System.Runtime.InteropServices;
+
+    using Model;
+    using BitmapData = Model.BitmapData;
+
     internal class BaseAlgorithm
     {
-        #region Constructors
-
-        public BaseAlgorithm(AlgorithmType type)
-        {
-            _type = type;
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private static double Clamp(double val, double min, double max)
-        {
-            return val < min ? min : (val > max ? max : val);
-        }
-
-        #endregion
-
         #region Private Properties
 
         private int _numberOfEdgePixels;
@@ -45,6 +28,15 @@ namespace ImageProcessing.Algorithms
         protected double[,] Kernel1 { get; set; }
 
         protected double[,] Kernel2 { get; set; }
+
+        #endregion
+
+        #region Constructors
+
+        public BaseAlgorithm(AlgorithmType type)
+        {
+            _type = type;
+        }
 
         #endregion
 
@@ -250,6 +242,15 @@ namespace ImageProcessing.Algorithms
             dst[currentPixelPos + 2] = clampedValue;
 
             return clampedValue > MagnitudeLimit ? 1 : 0;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static double Clamp(double val, double min, double max)
+        {
+            return val < min ? min : (val > max ? max : val);
         }
 
         #endregion
