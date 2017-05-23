@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 using ImageProcessing.Model;
 
 namespace ImageProcessing.Algorithms
@@ -23,7 +21,7 @@ namespace ImageProcessing.Algorithms
 
 
             Bitmap tmp;
-            var edgeList2 = Canny1(grayimage, out tmp);
+            var edgeList2 = CannyAlgo(grayimage, out tmp);
 
             // var tmp = new Bitmap(grayimage);
 
@@ -38,6 +36,7 @@ namespace ImageProcessing.Algorithms
                 tmp.SetPixel(point.X, point.Y, Color.White);
             }
 
+            _numberOfEdgePixels = edgeList2.Count;
 
             tmp.Save(
                 "C:\\Users\\Lukasz\\Documents\\GitHub\\ImageProcessing\\ImageProcessing\\ImageProcessing\\obj\\Debug\\TempPE\\tmp2.bmp");
@@ -46,7 +45,7 @@ namespace ImageProcessing.Algorithms
             return tmp;
         }
 
-        private List<Point> Canny1(Bitmap grayimage, out Bitmap tmp)
+        private List<Point> CannyAlgo(Bitmap grayimage, out Bitmap tmp)
         {
             var gx = new[,]
             {
@@ -137,7 +136,7 @@ namespace ImageProcessing.Algorithms
                     }
                 }
             }
-            //TODO: Dodać Double thresholding?
+
             tmp = new Bitmap(grayimage);
 
 

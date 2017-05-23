@@ -13,7 +13,7 @@
     {
         #region Private Properties
 
-        private int _numberOfEdgePixels;
+        protected int _numberOfEdgePixels;
 
         private readonly AlgorithmType _type;
 
