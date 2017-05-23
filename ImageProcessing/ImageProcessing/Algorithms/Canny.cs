@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using ImageProcessing.Model;
 
 namespace ImageProcessing.Algorithms
@@ -19,6 +21,33 @@ namespace ImageProcessing.Algorithms
 
             var grayimage = ToGrayScale(image);
 
+
+            Bitmap tmp;
+            var edgeList2 = Canny1(grayimage, out tmp);
+
+            // var tmp = new Bitmap(grayimage);
+
+            for (var i = 0; i < grayimage.Width; i++)
+                for (var j = 0; j < grayimage.Height; j++)
+                {
+                    tmp.SetPixel(i, j, Color.Black);
+                }
+
+            foreach (var point in edgeList2)
+            {
+                tmp.SetPixel(point.X, point.Y, Color.White);
+            }
+
+
+            tmp.Save(
+                "C:\\Users\\Lukasz\\Documents\\GitHub\\ImageProcessing\\ImageProcessing\\ImageProcessing\\obj\\Debug\\TempPE\\tmp2.bmp");
+
+
+            return tmp;
+        }
+
+        private List<Point> Canny1(Bitmap grayimage, out Bitmap tmp)
+        {
             var gx = new[,]
             {
                 {-1, 0, 1},
@@ -67,20 +96,19 @@ namespace ImageProcessing.Algorithms
             }
 
 
-            //TODO: czy potrzebne rozszerzenie 
             var grad_border = new int[imageWithDifferentiatex.GetLength(0), imageWithDifferentiatex.GetLength(1)];
             var rows = gradientImage.GetLength(0);
             var cols = gradientImage.GetLength(1);
-            var edgeList = new List<Point>();
-
+            var edgeList = new Stack<Point>();
+            var edgeList2 = new List<Point>();
 
             for (var i = 0; i < grad_border.GetLength(0); i++)
                 for (var j = 0; j < grad_border.GetLength(1); j++)
                     grad_border[i, j] = gradientImage[i, j];
 
 
-            float highT = 200, lowT = 50;
-
+            float highT = 50, lowT = 20;
+            //wycinanie krawedzi 
             for (var row = 1; row < rows - 1; row++)
             {
                 for (var col = 1; col < cols - 1; col++)
@@ -100,36 +128,45 @@ namespace ImageProcessing.Algorithms
                     var g2 = gmp2*w + gmp1*(1 - w);
                     if (g < g1 || g < g2)
                     {
-                        grad_border[row, col] = 0;
+                        grad_border[row, col] = g;
                     }
                     else if (g > highT)
                     {
-                        edgeList.Add(new Point(col, row));
+                        edgeList.Push(new Point(row, col));
+                        edgeList2.Add(new Point(row, col));
                     }
                 }
             }
             //TODO: Dodać Double thresholding?
+            tmp = new Bitmap(grayimage);
 
 
-            var tmp = new Bitmap(grayimage);
-
-            for (var i = 0; i < grayimage.Width; i++)
-                for (var j = 0; j < grayimage.Height; j++)
-                {
-                    tmp.SetPixel(i, j, Color.Black);
-                }
-
-            foreach (var point in edgeList)
+            while (edgeList.Count != 0)
             {
-                tmp.SetPixel(point.Y, point.X, Color.White);
+                var act = edgeList.Pop();
+                var angle = angleImage[act.X, act.Y];
+                //tmp.SetPixel(act.X, act.Y, Color.White);
+                Point p1, p2;
+                var w = neighbours(angle, out p1, out p2);
+
+                var newPoint1 = new Point(act.X + p1.X, act.Y + p1.Y);
+                var newPoint2 = new Point(act.X + p2.X, act.Y + p2.Y);
+                var newPoint3 = new Point(act.X - p1.X, act.Y - p1.Y);
+                var newPoint4 = new Point(act.X - p2.X, act.Y - p2.Y);
+
+                if (grad_border[newPoint1.X, newPoint1.Y] > lowT)
+                    edgeList2.Add(newPoint1);
+
+                if (grad_border[newPoint2.X, newPoint2.Y] > lowT)
+                    edgeList2.Add(newPoint2);
+
+                if (grad_border[newPoint3.X, newPoint3.Y] > lowT)
+                    edgeList2.Add(newPoint3);
+
+                if (grad_border[newPoint4.X, newPoint4.Y] > lowT)
+                    edgeList2.Add(newPoint4);
             }
-
-
-            tmp.Save(
-                "C:\\Users\\Lukasz\\Documents\\GitHub\\ImageProcessing\\ImageProcessing\\ImageProcessing\\obj\\Debug\\TempPE\\tmp2.bmp");
-
-
-            return base.ProcessImage(image);
+            return edgeList2;
         }
 
 
