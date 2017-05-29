@@ -23,14 +23,14 @@ namespace ImageProcessing.Algorithms
             //var bb = Canny2(image);
 
 
-            //Mat src = new Mat("C:\\Users\\Lukasz\\Documents\\GitHub\\ImageProcessing\\ImageProcessing\\Input\\K3.jpg", ImreadModes.GrayScale);
-            //Mat dst = new Mat();
-            //Cv2.Canny(src, dst, 50,200);
-            //using (new Window("src image", src))
-            //using (new Window("dst image", dst))
-            //{
-            //    Cv2.WaitKey();
-            //}
+            Mat src = new Mat("C:\\Users\\Lukasz\\Documents\\GitHub\\ImageProcessing\\ImageProcessing\\Input\\DSC_9509.JPG", ImreadModes.GrayScale);
+            Mat dst = new Mat();
+            Cv2.Canny(src, dst, 50, 200);
+            using (new Window("src image", src))
+            using (new Window("dst image", dst))
+            {
+                Cv2.WaitKey();
+            }
 
             var bb = Canny2(image);
 
@@ -248,16 +248,16 @@ namespace ImageProcessing.Algorithms
                 var newPoint3 = new Point(act.X - p1.X, act.Y - p1.Y);
                 var newPoint4 = new Point(act.X - p2.X, act.Y - p2.Y);
 
-                if (allPixRs[newPoint1.X, newPoint1.Y] > lowT && !edgeList2.Contains(newPoint1))
+                if (allPixRs[newPoint1.X, newPoint1.Y] > lowT )
                     edgeList2.Add(newPoint1);
 
-                if (allPixRs[newPoint2.X, newPoint2.Y] > lowT && !edgeList2.Contains(newPoint2))
+                if (allPixRs[newPoint2.X, newPoint2.Y] > lowT )
                     edgeList2.Add(newPoint2);
 
-                if (allPixRs[newPoint3.X, newPoint3.Y] > lowT && !edgeList2.Contains(newPoint3))
+                if (allPixRs[newPoint3.X, newPoint3.Y] > lowT )
                     edgeList2.Add(newPoint3);
 
-                if (allPixRs[newPoint4.X, newPoint4.Y] > lowT && !edgeList2.Contains(newPoint4))
+                if (allPixRs[newPoint4.X, newPoint4.Y] > lowT )
                     edgeList2.Add(newPoint4);
             }
 
