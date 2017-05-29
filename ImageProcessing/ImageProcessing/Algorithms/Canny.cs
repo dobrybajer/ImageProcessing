@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using ImageProcessing.Model;
+using OpenCvSharp;
+using Point = System.Drawing.Point;
+
+
 
 namespace ImageProcessing.Algorithms
 {
@@ -16,7 +21,18 @@ namespace ImageProcessing.Algorithms
         public override Bitmap ProcessImage(Bitmap image)
         {
             //var bb = Canny2(image);
-            var bb = CannyAlgo(image);
+
+
+            //Mat src = new Mat("C:\\Users\\Lukasz\\Documents\\GitHub\\ImageProcessing\\ImageProcessing\\Input\\K3.jpg", ImreadModes.GrayScale);
+            //Mat dst = new Mat();
+            //Cv2.Canny(src, dst, 50,200);
+            //using (new Window("src image", src))
+            //using (new Window("dst image", dst))
+            //{
+            //    Cv2.WaitKey();
+            //}
+
+            var bb = Canny2(image);
 
             return bb;
         }
@@ -27,7 +43,8 @@ namespace ImageProcessing.Algorithms
             var width = b.Width;
             var height = b.Height;
 
-
+            var edgeList = new Stack<Point>();
+            var edgeList2 = new List<Point>();
             var grayimage = ToGrayScale(image);
 
             var allPix = new int[width, height];
@@ -169,7 +186,8 @@ namespace ImageProcessing.Algorithms
                 }
             }
 
-            var threshold = 80;
+            var threshold = 200;
+            var lowT = 50;
             var allPixRf = new int[width, height];
 
             var bb = new Bitmap(width, height);
@@ -181,21 +199,82 @@ namespace ImageProcessing.Algorithms
                     if (allPixRs[i, j] > threshold)
                     {
                         allPixRf[i, j] = 1;
+                        edgeList.Push(new Point(i, j));
+                        edgeList2.Add(new Point(i, j));
                     }
                     else
                     {
                         allPixRf[i, j] = 0;
                     }
 
-                    if (allPixRf[i, j] == 1)
-                    {
-                        bb.SetPixel(i, j, Color.White);
-                        _numberOfEdgePixels++;
-                    }
-                    else
-                        bb.SetPixel(i, j, Color.Black);
+                    //    if (allPixRf[i, j] == 1)
+                    //    {
+                    //        bb.SetPixel(i, j, Color.White);
+                    //        _numberOfEdgePixels++;
+                    //    }
+                    //    else
+                    //        bb.SetPixel(i, j, Color.Black);
                 }
             }
+
+            while (edgeList.Count != 0)
+            {
+                var act = edgeList.Pop();
+
+                //tmp.SetPixel(act.X, act.Y, Color.White);
+                Point p1, p2;
+                switch (tanR[act.X, act.Y])
+                {
+                    case 0:
+                        p1 = new Point(1, 0);
+                        p2 = new Point(1, 1);
+                        break;
+                    case 1:
+                        p1 = new Point(1, 1);
+                        p2 = new Point(0, 1);
+                        break;
+                    case 2:
+                        p1 = new Point(0, 1);
+                        p2 = new Point(-1, 1);
+                        break;
+                    default:
+                        p1 = new Point(-1, 1);
+                        p2 = new Point(-1, 0);
+                        break;
+                }
+
+                var newPoint1 = new Point(act.X + p1.X, act.Y + p1.Y);
+                var newPoint2 = new Point(act.X + p2.X, act.Y + p2.Y);
+                var newPoint3 = new Point(act.X - p1.X, act.Y - p1.Y);
+                var newPoint4 = new Point(act.X - p2.X, act.Y - p2.Y);
+
+                if (allPixRs[newPoint1.X, newPoint1.Y] > lowT && !edgeList2.Contains(newPoint1))
+                    edgeList2.Add(newPoint1);
+
+                if (allPixRs[newPoint2.X, newPoint2.Y] > lowT && !edgeList2.Contains(newPoint2))
+                    edgeList2.Add(newPoint2);
+
+                if (allPixRs[newPoint3.X, newPoint3.Y] > lowT && !edgeList2.Contains(newPoint3))
+                    edgeList2.Add(newPoint3);
+
+                if (allPixRs[newPoint4.X, newPoint4.Y] > lowT && !edgeList2.Contains(newPoint4))
+                    edgeList2.Add(newPoint4);
+            }
+
+            for (var i = 0; i < grayimage.Width; i++)
+                for (var j = 0; j < grayimage.Height; j++)
+                {
+                    bb.SetPixel(i, j, Color.Black);
+                }
+
+            foreach (var point in edgeList2)
+            {
+                bb.SetPixel(point.X, point.Y, Color.White);
+            }
+
+            _numberOfEdgePixels = edgeList2.Count;
+
+
             return bb;
         }
 
@@ -292,31 +371,31 @@ namespace ImageProcessing.Algorithms
             Bitmap tmp = new Bitmap(grayimage);
 
 
-            while (edgeList.Count != 0)
-            {
-                var act = edgeList.Pop();
-                var angle = angleImage[act.X, act.Y];
-                //tmp.SetPixel(act.X, act.Y, Color.White);
-                Point p1, p2;
-                var w = neighbours(angle, out p1, out p2);
+            //while (edgeList.Count != 0)
+            //{
+            //    var act = edgeList.Pop();
+            //    var angle = angleImage[act.X, act.Y];
+            //    //tmp.SetPixel(act.X, act.Y, Color.White);
+            //    Point p1, p2;
+            //    var w = neighbours(angle, out p1, out p2);
 
-                var newPoint1 = new Point(act.X + p1.X, act.Y + p1.Y);
-                var newPoint2 = new Point(act.X + p2.X, act.Y + p2.Y);
-                var newPoint3 = new Point(act.X - p1.X, act.Y - p1.Y);
-                var newPoint4 = new Point(act.X - p2.X, act.Y - p2.Y);
+            //    var newPoint1 = new Point(act.X + p1.X, act.Y + p1.Y);
+            //    var newPoint2 = new Point(act.X + p2.X, act.Y + p2.Y);
+            //    var newPoint3 = new Point(act.X - p1.X, act.Y - p1.Y);
+            //    var newPoint4 = new Point(act.X - p2.X, act.Y - p2.Y);
 
-                if (grad_border[newPoint1.X, newPoint1.Y] > lowT)
-                    edgeList2.Add(newPoint1);
+            //    if (grad_border[newPoint1.X, newPoint1.Y] > lowT)
+            //        edgeList2.Add(newPoint1);
 
-                if (grad_border[newPoint2.X, newPoint2.Y] > lowT)
-                    edgeList2.Add(newPoint2);
+            //    if (grad_border[newPoint2.X, newPoint2.Y] > lowT)
+            //        edgeList2.Add(newPoint2);
 
-                if (grad_border[newPoint3.X, newPoint3.Y] > lowT)
-                    edgeList2.Add(newPoint3);
+            //    if (grad_border[newPoint3.X, newPoint3.Y] > lowT)
+            //        edgeList2.Add(newPoint3);
 
-                if (grad_border[newPoint4.X, newPoint4.Y] > lowT)
-                    edgeList2.Add(newPoint4);
-            }
+            //    if (grad_border[newPoint4.X, newPoint4.Y] > lowT)
+            //        edgeList2.Add(newPoint4);
+            //}
 
             for (var i = 0; i < grayimage.Width; i++)
                 for (var j = 0; j < grayimage.Height; j++)
