@@ -15,8 +15,8 @@ namespace ImageProcessing.Algorithms
 
         public override Bitmap ProcessImage(Bitmap image)
         {
-            var bb = Canny2(image);
             //var bb = Canny2(image);
+            var bb = CannyAlgo(image);
 
             return bb;
         }
@@ -29,31 +29,29 @@ namespace ImageProcessing.Algorithms
 
 
             var grayimage = ToGrayScale(image);
-            //pictureBox2.Image = n;//////////////////////////////////////////////////////here onward use n///////////////////////////////////////////////
-            var allPixRn = new int[width, height];
+
+            var allPix = new int[width, height];
 
 
             for (var i = 0; i < width; i++)
             {
                 for (var j = 0; j < height; j++)
                 {
-                    allPixRn[i, j] = grayimage.GetPixel(i, j).R;
+                    allPix[i, j] = grayimage.GetPixel(i, j).R;
                 }
             }
 
+            //allPix = GaussianFilter(allPix);
 
             int[,] gx = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
             int[,] gy = {{1, 2, 1}, {0, 0, 0}, {-1, -2, -1}};
-            int new_rx = 0, new_ry = 0;
-            int new_gx = 0, new_gy = 0;
-            int new_bx = 0, new_by = 0;
+            int new_x = 0, new_y = 0;
             int rc;
-            int gradR;
+            int grad;
+            var graidient = new int[width, height];
 
-            var graidientR = new int[width, height];
 
-
-            int atanR;
+            int atan;
 
             var tanR = new int[width, height];
 
@@ -62,58 +60,55 @@ namespace ImageProcessing.Algorithms
             {
                 for (var j = 1; j < b.Height - 1; j++)
                 {
-                    new_rx = 0;
-                    new_ry = 0;
+                    new_x = 0;
+                    new_y = 0;
 
 
                     for (var wi = -1; wi < 2; wi++)
                     {
                         for (var hw = -1; hw < 2; hw++)
                         {
-                            rc = allPixRn[i + hw, j + wi];
-                            new_rx += gx[wi + 1, hw + 1]*rc;
-                            new_ry += gy[wi + 1, hw + 1]*rc;
+                            rc = allPix[i + hw, j + wi];
+                            new_x += gx[wi + 1, hw + 1]*rc;
+                            new_y += gy[wi + 1, hw + 1]*rc;
                         }
                     }
 
-                    //find gradieant
-                    gradR = (int) Math.Sqrt(new_rx*new_rx + new_ry*new_ry);
-                    graidientR[i, j] = gradR;
 
+                    grad = (int) Math.Sqrt(new_x*new_x + new_y*new_y);
+                    graidient[i, j] = grad;
 
-                    //find tans
-                    ////////////////tan red//////////////////////////////////
-                    atanR = (int) (Math.Atan((double) new_ry/new_rx)*(180/Math.PI));
-                    if ((atanR > 0 && atanR < 22.5) || (atanR > 157.5 && atanR < 180))
+                    atan = (int) (Math.Atan((double) new_y/new_x)*(180/Math.PI));
+                    if ((atan > 0 && atan < 22.5) || (atan > 157.5 && atan < 180))
                     {
-                        atanR = 0;
+                        atan = 0;
                     }
-                    else if (atanR > 22.5 && atanR < 67.5)
+                    else if (atan > 22.5 && atan < 67.5)
                     {
-                        atanR = 45;
+                        atan = 45;
                     }
-                    else if (atanR > 67.5 && atanR < 112.5)
+                    else if (atan > 67.5 && atan < 112.5)
                     {
-                        atanR = 90;
+                        atan = 90;
                     }
-                    else if (atanR > 112.5 && atanR < 157.5)
+                    else if (atan > 112.5 && atan < 157.5)
                     {
-                        atanR = 135;
+                        atan = 135;
                     }
 
-                    if (atanR == 0)
+                    if (atan == 0)
                     {
                         tanR[i, j] = 0;
                     }
-                    else if (atanR == 45)
+                    else if (atan == 45)
                     {
                         tanR[i, j] = 1;
                     }
-                    else if (atanR == 90)
+                    else if (atan == 90)
                     {
                         tanR[i, j] = 2;
                     }
-                    else if (atanR == 135)
+                    else if (atan == 135)
                     {
                         tanR[i, j] = 3;
                     }
@@ -129,9 +124,9 @@ namespace ImageProcessing.Algorithms
                 {
                     if (tanR[i, j] == 0)
                     {
-                        if (graidientR[i - 1, j] < graidientR[i, j] && graidientR[i + 1, j] < graidientR[i, j])
+                        if (graidient[i - 1, j] < graidient[i, j] && graidient[i + 1, j] < graidient[i, j])
                         {
-                            allPixRs[i, j] = graidientR[i, j];
+                            allPixRs[i, j] = graidient[i, j];
                         }
                         else
                         {
@@ -140,9 +135,9 @@ namespace ImageProcessing.Algorithms
                     }
                     if (tanR[i, j] == 1)
                     {
-                        if (graidientR[i - 1, j + 1] < graidientR[i, j] && graidientR[i + 1, j - 1] < graidientR[i, j])
+                        if (graidient[i - 1, j + 1] < graidient[i, j] && graidient[i + 1, j - 1] < graidient[i, j])
                         {
-                            allPixRs[i, j] = graidientR[i, j];
+                            allPixRs[i, j] = graidient[i, j];
                         }
                         else
                         {
@@ -151,9 +146,9 @@ namespace ImageProcessing.Algorithms
                     }
                     if (tanR[i, j] == 2)
                     {
-                        if (graidientR[i, j - 1] < graidientR[i, j] && graidientR[i, j + 1] < graidientR[i, j])
+                        if (graidient[i, j - 1] < graidient[i, j] && graidient[i, j + 1] < graidient[i, j])
                         {
-                            allPixRs[i, j] = graidientR[i, j];
+                            allPixRs[i, j] = graidient[i, j];
                         }
                         else
                         {
@@ -162,9 +157,9 @@ namespace ImageProcessing.Algorithms
                     }
                     if (tanR[i, j] == 3)
                     {
-                        if (graidientR[i - 1, j - 1] < graidientR[i, j] && graidientR[i + 1, j + 1] < graidientR[i, j])
+                        if (graidient[i - 1, j - 1] < graidient[i, j] && graidient[i + 1, j + 1] < graidient[i, j])
                         {
-                            allPixRs[i, j] = graidientR[i, j];
+                            allPixRs[i, j] = graidient[i, j];
                         }
                         else
                         {
@@ -177,7 +172,6 @@ namespace ImageProcessing.Algorithms
             var threshold = 80;
             var allPixRf = new int[width, height];
 
-            // Bitmap bb = new Bitmap (pictureBox1.Image);
             var bb = new Bitmap(width, height);
 
             for (var i = 2; i < width - 2; i++)
@@ -205,7 +199,7 @@ namespace ImageProcessing.Algorithms
             return bb;
         }
 
-        private Bitmap CannyAlgo(Bitmap image, out Bitmap tmp)
+        private Bitmap CannyAlgo(Bitmap image)
         {
             var gx = new[,]
             {
@@ -264,7 +258,7 @@ namespace ImageProcessing.Algorithms
                     grad_border[i, j] = gradientImage[i, j];
 
 
-            float highT = 200, lowT = 20;
+            float highT = 70, lowT = 20;
             //wycinanie krawedzi 
             for (var row = 1; row < rows - 1; row++)
             {
@@ -295,34 +289,34 @@ namespace ImageProcessing.Algorithms
                 }
             }
 
-            tmp = new Bitmap(grayimage);
+            Bitmap tmp = new Bitmap(grayimage);
 
 
-            //while (edgeList.Count != 0)
-            //{
-            //    var act = edgeList.Pop();
-            //    var angle = angleImage[act.X, act.Y];
-            //    //tmp.SetPixel(act.X, act.Y, Color.White);
-            //    Point p1, p2;
-            //    var w = neighbours(angle, out p1, out p2);
+            while (edgeList.Count != 0)
+            {
+                var act = edgeList.Pop();
+                var angle = angleImage[act.X, act.Y];
+                //tmp.SetPixel(act.X, act.Y, Color.White);
+                Point p1, p2;
+                var w = neighbours(angle, out p1, out p2);
 
-            //    var newPoint1 = new Point(act.X + p1.X, act.Y + p1.Y);
-            //    var newPoint2 = new Point(act.X + p2.X, act.Y + p2.Y);
-            //    var newPoint3 = new Point(act.X - p1.X, act.Y - p1.Y);
-            //    var newPoint4 = new Point(act.X - p2.X, act.Y - p2.Y);
+                var newPoint1 = new Point(act.X + p1.X, act.Y + p1.Y);
+                var newPoint2 = new Point(act.X + p2.X, act.Y + p2.Y);
+                var newPoint3 = new Point(act.X - p1.X, act.Y - p1.Y);
+                var newPoint4 = new Point(act.X - p2.X, act.Y - p2.Y);
 
-            //    if (grad_border[newPoint1.X, newPoint1.Y] > lowT)
-            //        edgeList2.Add(newPoint1);
+                if (grad_border[newPoint1.X, newPoint1.Y] > lowT)
+                    edgeList2.Add(newPoint1);
 
-            //    if (grad_border[newPoint2.X, newPoint2.Y] > lowT)
-            //        edgeList2.Add(newPoint2);
+                if (grad_border[newPoint2.X, newPoint2.Y] > lowT)
+                    edgeList2.Add(newPoint2);
 
-            //    if (grad_border[newPoint3.X, newPoint3.Y] > lowT)
-            //        edgeList2.Add(newPoint3);
+                if (grad_border[newPoint3.X, newPoint3.Y] > lowT)
+                    edgeList2.Add(newPoint3);
 
-            //    if (grad_border[newPoint4.X, newPoint4.Y] > lowT)
-            //        edgeList2.Add(newPoint4);
-            //}          
+                if (grad_border[newPoint4.X, newPoint4.Y] > lowT)
+                    edgeList2.Add(newPoint4);
+            }
 
             for (var i = 0; i < grayimage.Width; i++)
                 for (var j = 0; j < grayimage.Height; j++)
@@ -417,7 +411,7 @@ namespace ImageProcessing.Algorithms
             float Sum = 0;
 
 
-            Output = Data; // Removes Unwanted Data Omission due to kernel bias while convolution
+            Output = Data;
 
 
             for (i = Limit; i <= Data.GetLength(0) - 1 - Limit; i++)
