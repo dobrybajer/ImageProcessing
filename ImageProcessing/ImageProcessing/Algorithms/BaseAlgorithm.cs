@@ -13,8 +13,6 @@
     {
         #region Private Properties
 
-        protected int _numberOfEdgePixels;
-
         private readonly AlgorithmType _type;
 
         private bool UseOnlyFirstKernel => Kernel2 == null;
@@ -23,7 +21,9 @@
 
         #region Protected Properties
 
-        protected const int MagnitudeLimit = 32;
+        protected int NumberOfEdgePixels;
+
+        protected const int MagnitudeLimit = 50;
 
         protected double[,] Kernel1 { get; set; }
 
@@ -50,7 +50,7 @@
                 Console.CursorLeft = 0;
                 Console.Write($"{_type}: {count++/input.Images.Count*100}%");
 
-                _numberOfEdgePixels = 0;
+                NumberOfEdgePixels = 0;
 
                 var stopwatch = Stopwatch.StartNew();
                 var processedImage = ProcessImage(image.Value);
@@ -59,7 +59,7 @@
                 output.Data[_type].Images.Add(image.Key, processedImage);
                 output.Data[_type].ExecutionTime.Add(image.Key, stopwatch.ElapsedMilliseconds);
                 output.Data[_type].EdgePixelsPercentage.Add(image.Key,
-                    _numberOfEdgePixels/(double) (image.Value.Width*image.Value.Height));
+                    NumberOfEdgePixels/(double) (image.Value.Width*image.Value.Height));
             }
 
             Console.WriteLine(" ");
@@ -99,7 +99,7 @@
                     {
                         for (var x = 1; x < image.Width - 1; x++)
                         {
-                            _numberOfEdgePixels += MakeConvolutionWithPixel(originBitmapData, rgbValues, x, y);
+                            NumberOfEdgePixels += MakeConvolutionWithPixel(originBitmapData, rgbValues, x, y);
                         }
                     }
 
@@ -224,22 +224,22 @@
 
             var currentPixelPos = (y*srcData.Width + x)*srcData.BytesPerPixel;
 
-            //if (clampedValue > MagnitudeLimit)
-            //{
-            //    dst[currentPixelPos] = Color.Black.R;
-            //    dst[currentPixelPos + 1] = Color.Black.G;
-            //    dst[currentPixelPos + 2] = Color.Black.B;
-            //}
-            //else
-            //{
-            //    dst[currentPixelPos] = Color.White.R;
-            //    dst[currentPixelPos + 1] = Color.White.G;
-            //    dst[currentPixelPos + 2] = Color.White.B;
-            //}
+            if (clampedValue <= MagnitudeLimit)
+            {
+                dst[currentPixelPos] = Color.Black.R;
+                dst[currentPixelPos + 1] = Color.Black.G;
+                dst[currentPixelPos + 2] = Color.Black.B;
+            }
+            else
+            {
+                dst[currentPixelPos] = Color.White.R;
+                dst[currentPixelPos + 1] = Color.White.G;
+                dst[currentPixelPos + 2] = Color.White.B;
+            }
 
-            dst[currentPixelPos] = clampedValue;
-            dst[currentPixelPos + 1] = clampedValue;
-            dst[currentPixelPos + 2] = clampedValue;
+            //dst[currentPixelPos] = clampedValue;
+            //dst[currentPixelPos + 1] = clampedValue;
+            //dst[currentPixelPos + 2] = clampedValue;
 
             return clampedValue > MagnitudeLimit ? 1 : 0;
         }

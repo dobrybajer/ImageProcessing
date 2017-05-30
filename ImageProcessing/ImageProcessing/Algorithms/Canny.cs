@@ -168,7 +168,7 @@
                 }
             }
 
-            const int threshold = 200;
+            const int threshold = 80;
             const int lowT = 50;
             var allPixRf = new int[width, height];
 
@@ -178,7 +178,7 @@
             {
                 for (var j = 2; j < height - 2; j++)
                 {
-                    if (allPixRs[i, j] > threshold)
+                    if (allPixRs[i, j] > MagnitudeLimit)
                     {
                         allPixRf[i, j] = 1;
                         edgeList.Push(new Point(i, j));
@@ -245,7 +245,7 @@
                 bb.SetPixel(point.X, point.Y, Color.White);
             }
 
-            _numberOfEdgePixels = edgeList2.Count;
+            NumberOfEdgePixels = edgeList2.Count;
 
 
             return bb;
@@ -350,7 +350,7 @@
                 tmp.SetPixel(point.X, point.Y, Color.White);
             }
 
-            _numberOfEdgePixels = edgeList2.Count;
+            NumberOfEdgePixels = edgeList2.Count;
 
             return tmp;
         }
