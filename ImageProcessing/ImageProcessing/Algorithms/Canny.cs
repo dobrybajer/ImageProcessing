@@ -1,40 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using ImageProcessing.Model;
-using OpenCvSharp;
-using Point = System.Drawing.Point;
-
-
-
-namespace ImageProcessing.Algorithms
+﻿namespace ImageProcessing.Algorithms
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using Point = System.Drawing.Point;
+
+    using Model;
+
+    using OpenCvSharp;
+    
     internal class Canny : BaseAlgorithm
     {
-        public Canny() : base(AlgorithmType.Canny)
-        {
-        }
+        public Canny() : base(AlgorithmType.Canny) { }
 
         public int[,] GaussianKernel { get; set; }
 
         public override Bitmap ProcessImage(Bitmap image)
-        {
-            //var bb = Canny2(image);
+        {          
+            //var src = new Mat("C:\\Users\\Lukasz\\Documents\\GitHub\\ImageProcessing\\ImageProcessing\\Input\\DSC_9509.JPG", ImreadModes.GrayScale);
+            //var dst = new Mat();
+            //Cv2.Canny(src, dst, 50, 200);
+            //using (new Window("src image", src))
+            //using (new Window("dst image", dst))
+            //{
+            //    Cv2.WaitKey();
+            //}
 
-
-            Mat src = new Mat("C:\\Users\\Lukasz\\Documents\\GitHub\\ImageProcessing\\ImageProcessing\\Input\\DSC_9509.JPG", ImreadModes.GrayScale);
-            Mat dst = new Mat();
-            Cv2.Canny(src, dst, 50, 200);
-            using (new Window("src image", src))
-            using (new Window("dst image", dst))
-            {
-                Cv2.WaitKey();
-            }
-
-            var bb = Canny2(image);
-
-            return bb;
+            return Canny2(image);
         }
 
         private Bitmap Canny2(Bitmap image)
@@ -48,8 +40,7 @@ namespace ImageProcessing.Algorithms
             var grayimage = ToGrayScale(image);
 
             var allPix = new int[width, height];
-
-
+            
             for (var i = 0; i < width; i++)
             {
                 for (var j = 0; j < height; j++)
@@ -58,44 +49,35 @@ namespace ImageProcessing.Algorithms
                 }
             }
 
-            //allPix = GaussianFilter(allPix);
-
             int[,] gx = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
             int[,] gy = {{1, 2, 1}, {0, 0, 0}, {-1, -2, -1}};
-            int new_x = 0, new_y = 0;
-            int rc;
-            int grad;
             var graidient = new int[width, height];
-
-
-            int atan;
-
+            
             var tanR = new int[width, height];
-
-
+            
             for (var i = 1; i < b.Width - 1; i++)
             {
                 for (var j = 1; j < b.Height - 1; j++)
                 {
-                    new_x = 0;
-                    new_y = 0;
+                    var newX = 0;
+                    var newY = 0;
 
 
                     for (var wi = -1; wi < 2; wi++)
                     {
                         for (var hw = -1; hw < 2; hw++)
                         {
-                            rc = allPix[i + hw, j + wi];
-                            new_x += gx[wi + 1, hw + 1]*rc;
-                            new_y += gy[wi + 1, hw + 1]*rc;
+                            var rc = allPix[i + hw, j + wi];
+                            newX += gx[wi + 1, hw + 1]*rc;
+                            newY += gy[wi + 1, hw + 1]*rc;
                         }
                     }
 
 
-                    grad = (int) Math.Sqrt(new_x*new_x + new_y*new_y);
+                    var grad = (int) Math.Sqrt(newX*newX + newY*newY);
                     graidient[i, j] = grad;
 
-                    atan = (int) (Math.Atan((double) new_y/new_x)*(180/Math.PI));
+                    var atan = (int) (Math.Atan((double) newY/newX)*(180/Math.PI));
                     if ((atan > 0 && atan < 22.5) || (atan > 157.5 && atan < 180))
                     {
                         atan = 0;
@@ -186,8 +168,8 @@ namespace ImageProcessing.Algorithms
                 }
             }
 
-            var threshold = 200;
-            var lowT = 50;
+            const int threshold = 200;
+            const int lowT = 50;
             var allPixRf = new int[width, height];
 
             var bb = new Bitmap(width, height);
@@ -206,14 +188,6 @@ namespace ImageProcessing.Algorithms
                     {
                         allPixRf[i, j] = 0;
                     }
-
-                    //    if (allPixRf[i, j] == 1)
-                    //    {
-                    //        bb.SetPixel(i, j, Color.White);
-                    //        _numberOfEdgePixels++;
-                    //    }
-                    //    else
-                    //        bb.SetPixel(i, j, Color.Black);
                 }
             }
 
@@ -221,7 +195,6 @@ namespace ImageProcessing.Algorithms
             {
                 var act = edgeList.Pop();
 
-                //tmp.SetPixel(act.X, act.Y, Color.White);
                 Point p1, p2;
                 switch (tanR[act.X, act.Y])
                 {
@@ -295,23 +268,19 @@ namespace ImageProcessing.Algorithms
 
             var grayimage = ToGrayScale(image);
 
-
             var valuesOfGray = new int[grayimage.Width, grayimage.Height];
-
-
+            
             for (var i = 0; i < grayimage.Width; i++)
                 for (var j = 0; j < grayimage.Height; j++)
                     valuesOfGray[i, j] = grayimage.GetPixel(i, j).G;
-
-
+            
             var imageWithGauss = GaussianFilter(valuesOfGray);
             var imageWithDifferentiatex = Differentiate(imageWithGauss, gx);
             var imageWithDifferentiatey = Differentiate(imageWithGauss, gy);
 
             var gradientImage = new int[imageWithDifferentiatex.GetLength(0), imageWithDifferentiatex.GetLength(1)];
             var angleImage = new int[imageWithDifferentiatex.GetLength(0), imageWithDifferentiatex.GetLength(1)];
-
-
+            
             for (var i = 0; i < imageWithDifferentiatex.GetLength(0); i++)
             {
                 for (var j = 0; j < imageWithDifferentiatex.GetLength(1); j++)
@@ -325,19 +294,19 @@ namespace ImageProcessing.Algorithms
                 }
             }
 
-
-            var grad_border = new int[imageWithDifferentiatex.GetLength(0), imageWithDifferentiatex.GetLength(1)];
+            var gradBorder = new int[imageWithDifferentiatex.GetLength(0), imageWithDifferentiatex.GetLength(1)];
             var rows = gradientImage.GetLength(0);
             var cols = gradientImage.GetLength(1);
             var edgeList = new Stack<Point>();
             var edgeList2 = new List<Point>();
 
-            for (var i = 0; i < grad_border.GetLength(0); i++)
-                for (var j = 0; j < grad_border.GetLength(1); j++)
-                    grad_border[i, j] = gradientImage[i, j];
+            for (var i = 0; i < gradBorder.GetLength(0); i++)
+                for (var j = 0; j < gradBorder.GetLength(1); j++)
+                    gradBorder[i, j] = gradientImage[i, j];
 
 
-            float highT = 70, lowT = 20;
+            const float highT = 70;
+
             //wycinanie krawedzi 
             for (var row = 1; row < rows - 1; row++)
             {
@@ -346,19 +315,19 @@ namespace ImageProcessing.Algorithms
                     var angle = angleImage[row - 1, col - 1];
                     var act = new Point(row - 1, col - 1);
                     Point p1, p2;
-                    var w = neighbours(angle, out p1, out p2);
+                    var w = Neighbours(angle, out p1, out p2);
 
-                    var g = grad_border[row, col];
+                    var g = gradBorder[row, col];
 
-                    var gpn1 = grad_border[addPoint(act, p1).X, addPoint(act, p1).Y];
-                    var gpn2 = grad_border[addPoint(act, p2).X, addPoint(act, p2).Y];
+                    var gpn1 = gradBorder[AddPoint(act, p1).X, AddPoint(act, p1).Y];
+                    var gpn2 = gradBorder[AddPoint(act, p2).X, AddPoint(act, p2).Y];
                     var g1 = gpn2*w + gpn1*(1 - w);
-                    var gmp1 = grad_border[subtractPoint(act, p1).X, subtractPoint(act, p1).Y];
-                    var gmp2 = grad_border[subtractPoint(act, p2).X, subtractPoint(act, p2).Y];
+                    var gmp1 = gradBorder[SubtractPoint(act, p1).X, SubtractPoint(act, p1).Y];
+                    var gmp2 = gradBorder[SubtractPoint(act, p2).X, SubtractPoint(act, p2).Y];
                     var g2 = gmp2*w + gmp1*(1 - w);
                     if (g < g1 || g < g2)
                     {
-                        grad_border[row, col] = g;
+                        gradBorder[row, col] = g;
                     }
                     else if (g > highT)
                     {
@@ -368,34 +337,7 @@ namespace ImageProcessing.Algorithms
                 }
             }
 
-            Bitmap tmp = new Bitmap(grayimage);
-
-
-            //while (edgeList.Count != 0)
-            //{
-            //    var act = edgeList.Pop();
-            //    var angle = angleImage[act.X, act.Y];
-            //    //tmp.SetPixel(act.X, act.Y, Color.White);
-            //    Point p1, p2;
-            //    var w = neighbours(angle, out p1, out p2);
-
-            //    var newPoint1 = new Point(act.X + p1.X, act.Y + p1.Y);
-            //    var newPoint2 = new Point(act.X + p2.X, act.Y + p2.Y);
-            //    var newPoint3 = new Point(act.X - p1.X, act.Y - p1.Y);
-            //    var newPoint4 = new Point(act.X - p2.X, act.Y - p2.Y);
-
-            //    if (grad_border[newPoint1.X, newPoint1.Y] > lowT)
-            //        edgeList2.Add(newPoint1);
-
-            //    if (grad_border[newPoint2.X, newPoint2.Y] > lowT)
-            //        edgeList2.Add(newPoint2);
-
-            //    if (grad_border[newPoint3.X, newPoint3.Y] > lowT)
-            //        edgeList2.Add(newPoint3);
-
-            //    if (grad_border[newPoint4.X, newPoint4.Y] > lowT)
-            //        edgeList2.Add(newPoint4);
-            //}
+            var tmp = new Bitmap(grayimage);
 
             for (var i = 0; i < grayimage.Width; i++)
                 for (var j = 0; j < grayimage.Height; j++)
@@ -413,140 +355,139 @@ namespace ImageProcessing.Algorithms
             return tmp;
         }
 
-
-        private void GenerateGaussianKernel(int N, float S, out int Weight)
+        private void GenerateGaussianKernel(int n, float s, out int weight)
         {
-            var Sigma = S;
-            float pi;
-            pi = (float) Math.PI;
+            var sigma = s;
+            const float pi = (float) Math.PI;
             int i, j;
-            var SizeofKernel = N;
+            var sizeofKernel = n;
 
-            var Kernel = new float[N, N];
-            GaussianKernel = new int[N, N];
-            var OP = new float[N, N];
-            float D1, D2;
+            var kernel = new float[n, n];
+            GaussianKernel = new int[n, n];
 
-
-            D1 = 1/(2*pi*Sigma*Sigma);
-            D2 = 2*Sigma*Sigma;
+            var d1 = 1/(2*pi*sigma*sigma);
+            var d2 = 2*sigma*sigma;
 
             float min = 1000;
 
-            for (i = -SizeofKernel/2; i <= SizeofKernel/2; i++)
+            for (i = -sizeofKernel/2; i <= sizeofKernel/2; i++)
             {
-                for (j = -SizeofKernel/2; j <= SizeofKernel/2; j++)
+                for (j = -sizeofKernel/2; j <= sizeofKernel/2; j++)
                 {
-                    Kernel[SizeofKernel/2 + i, SizeofKernel/2 + j] = 1/D1*(float) Math.Exp(-(i*i + j*j)/D2);
-                    if (Kernel[SizeofKernel/2 + i, SizeofKernel/2 + j] < min)
-                        min = Kernel[SizeofKernel/2 + i, SizeofKernel/2 + j];
+                    kernel[sizeofKernel/2 + i, sizeofKernel/2 + j] = 1/d1*(float) Math.Exp(-(i*i + j*j)/d2);
+                    if (kernel[sizeofKernel/2 + i, sizeofKernel/2 + j] < min)
+                        min = kernel[sizeofKernel/2 + i, sizeofKernel/2 + j];
                 }
             }
+
             var mult = (int) (1/min);
             var sum = 0;
             if ((min > 0) && (min < 1))
             {
-                for (i = -SizeofKernel/2; i <= SizeofKernel/2; i++)
+                for (i = -sizeofKernel/2; i <= sizeofKernel/2; i++)
                 {
-                    for (j = -SizeofKernel/2; j <= SizeofKernel/2; j++)
+                    for (j = -sizeofKernel/2; j <= sizeofKernel/2; j++)
                     {
-                        Kernel[SizeofKernel/2 + i, SizeofKernel/2 + j] =
-                            (float) Math.Round(Kernel[SizeofKernel/2 + i, SizeofKernel/2 + j]*mult, 0);
-                        GaussianKernel[SizeofKernel/2 + i, SizeofKernel/2 + j] =
-                            (int) Kernel[SizeofKernel/2 + i, SizeofKernel/2 + j];
-                        sum = sum + GaussianKernel[SizeofKernel/2 + i, SizeofKernel/2 + j];
+                        kernel[sizeofKernel/2 + i, sizeofKernel/2 + j] =
+                            (float) Math.Round(kernel[sizeofKernel/2 + i, sizeofKernel/2 + j]*mult, 0);
+                        GaussianKernel[sizeofKernel/2 + i, sizeofKernel/2 + j] =
+                            (int) kernel[sizeofKernel/2 + i, sizeofKernel/2 + j];
+                        sum = sum + GaussianKernel[sizeofKernel/2 + i, sizeofKernel/2 + j];
                     }
                 }
             }
             else
             {
                 sum = 0;
-                for (i = -SizeofKernel/2; i <= SizeofKernel/2; i++)
+                for (i = -sizeofKernel/2; i <= sizeofKernel/2; i++)
                 {
-                    for (j = -SizeofKernel/2; j <= SizeofKernel/2; j++)
+                    for (j = -sizeofKernel/2; j <= sizeofKernel/2; j++)
                     {
-                        Kernel[SizeofKernel/2 + i, SizeofKernel/2 + j] =
-                            (float) Math.Round(Kernel[SizeofKernel/2 + i, SizeofKernel/2 + j], 0);
-                        GaussianKernel[SizeofKernel/2 + i, SizeofKernel/2 + j] =
-                            (int) Kernel[SizeofKernel/2 + i, SizeofKernel/2 + j];
-                        sum = sum + GaussianKernel[SizeofKernel/2 + i, SizeofKernel/2 + j];
+                        kernel[sizeofKernel/2 + i, sizeofKernel/2 + j] =
+                            (float) Math.Round(kernel[sizeofKernel/2 + i, sizeofKernel/2 + j], 0);
+                        GaussianKernel[sizeofKernel/2 + i, sizeofKernel/2 + j] =
+                            (int) kernel[sizeofKernel/2 + i, sizeofKernel/2 + j];
+                        sum = sum + GaussianKernel[sizeofKernel/2 + i, sizeofKernel/2 + j];
                     }
                 }
             }
             //Normalizing kernel Weight
-            Weight = sum;
+            weight = sum;
         }
 
-        private int[,] GaussianFilter(int[,] Data)
+        private int[,] GaussianFilter(int[,] data)
         {
-            var KernelWeight = 0;
-            var KernelSize = 5;
-            GenerateGaussianKernel(5, 1, out KernelWeight);
+            int kernelWeight;
+            const int kernelSize = 5;
+            GenerateGaussianKernel(5, 1, out kernelWeight);
 
-            var Output = new int[Data.GetLength(0), Data.GetLength(1)];
-            int i, j, k, l;
-            var Limit = KernelSize/2;
+            int i;
+            const int limit = kernelSize/2;
 
-            float Sum = 0;
-
-
-            Output = Data;
-
-
-            for (i = Limit; i <= Data.GetLength(0) - 1 - Limit; i++)
+            var output = data;
+            
+            for (i = limit; i <= data.GetLength(0) - 1 - limit; i++)
             {
-                for (j = Limit; j <= Data.GetLength(1) - 1 - Limit; j++)
+                int j;
+                for (j = limit; j <= data.GetLength(1) - 1 - limit; j++)
                 {
-                    Sum = 0;
-                    for (k = -Limit; k <= Limit; k++)
+                    float sum = 0;
+                    int k;
+                    for (k = -limit; k <= limit; k++)
                     {
-                        for (l = -Limit; l <= Limit; l++)
+                        int l;
+                        for (l = -limit; l <= limit; l++)
                         {
-                            Sum = Sum + Data[i + k, j + l]*GaussianKernel[Limit + k, Limit + l];
+                            sum = sum + data[i + k, j + l]*GaussianKernel[limit + k, limit + l];
                         }
                     }
-                    Output[i, j] = (int) Math.Round(Sum/KernelWeight);
+                    output[i, j] = (int) Math.Round(sum/kernelWeight);
+                }
+            }
+            
+            return output;
+        }
+
+        private static float[,] Differentiate(int[,] data, int[,] filter)
+        {
+            int i;
+
+            var fw = filter.GetLength(0);
+            var fh = filter.GetLength(1);
+            var output = new float[data.GetLength(0), data.GetLength(1)];
+
+            for (i = fw/2; i <= data.GetLength(0) - fw/2 - 1; i++)
+            {
+                int j;
+                for (j = fh/2; j <= data.GetLength(1) - fh/2 - 1; j++)
+                {
+                    float sum = 0;
+                    int k;
+                    for (k = -fw/2; k <= fw/2; k++)
+                    {
+                        int l;
+                        for (l = -fh/2; l <= fh/2; l++)
+                        {
+                            sum = sum + data[i + k, j + l]*filter[fw/2 + k, fh/2 + l];
+                        }
+                    }
+                    output[i, j] = sum;
                 }
             }
 
-
-            return Output;
+            return output;
         }
 
-
-        private float[,] Differentiate(int[,] Data, int[,] Filter)
-        {
-            int i, j, k, l, Fh, Fw;
-
-            Fw = Filter.GetLength(0);
-            Fh = Filter.GetLength(1);
-            float sum = 0;
-            var Output = new float[Data.GetLength(0), Data.GetLength(1)];
-
-            for (i = Fw/2; i <= Data.GetLength(0) - Fw/2 - 1; i++)
-            {
-                for (j = Fh/2; j <= Data.GetLength(1) - Fh/2 - 1; j++)
-                {
-                    sum = 0;
-                    for (k = -Fw/2; k <= Fw/2; k++)
-                    {
-                        for (l = -Fh/2; l <= Fh/2; l++)
-                        {
-                            sum = sum + Data[i + k, j + l]*Filter[Fw/2 + k, Fh/2 + l];
-                        }
-                    }
-                    Output[i, j] = sum;
-                }
-            }
-            return Output;
-        }
-
-        private float neighbours(int angle, out Point n1, out Point n2)
+        private static float Neighbours(int angle, out Point n1, out Point n2)
         {
             if (angle >= 180)
+            {
                 angle -= 180;
+            }
+
             var quarter = angle/45;
             var weight = angle - quarter;
+
             switch (quarter)
             {
                 case 0:
@@ -569,14 +510,14 @@ namespace ImageProcessing.Algorithms
             return weight/45.0f;
         }
 
-        private Point addPoint(Point a, Point b)
+        private static Point AddPoint(Point a, Point b)
         {
-            return new Point(a.X + b.X + 1, a.Y + b.Y + 1); //1 do sztuczne przesuniecie 
+            return new Point(a.X + b.X + 1, a.Y + b.Y + 1); // 1 do sztuczne przesuniecie 
         }
 
-        private Point subtractPoint(Point a, Point b)
+        private static Point SubtractPoint(Point a, Point b)
         {
-            return new Point(a.X - b.X + 1, a.Y - b.Y + 1); //1 do sztuczne przesuniecie 
+            return new Point(a.X - b.X + 1, a.Y - b.Y + 1); // 1 do sztuczne przesuniecie 
         }
     }
 }
