@@ -168,7 +168,6 @@
                 }
             }
 
-            const int threshold = 80;
             const int lowT = 50;
             var allPixRf = new int[width, height];
 
@@ -178,7 +177,7 @@
             {
                 for (var j = 2; j < height - 2; j++)
                 {
-                    if (allPixRs[i, j] > MagnitudeLimit)
+                    if (allPixRs[i, j] > Threshold)
                     {
                         allPixRf[i, j] = 1;
                         edgeList.Push(new Point(i, j));

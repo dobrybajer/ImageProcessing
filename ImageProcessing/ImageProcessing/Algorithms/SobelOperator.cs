@@ -114,9 +114,9 @@
 
                     // If magnitude is higher than defined limit - this is a edge pixel
                     outputImage.SetPixel(i, j,
-                        newRx*newRx + newRy*newRy > MagnitudeLimit*MagnitudeLimit ||
-                        newGx*newGx + newGy*newGy > MagnitudeLimit*MagnitudeLimit ||
-                        newBx*newBx + newBy*newBy > MagnitudeLimit*MagnitudeLimit
+                        newRx*newRx + newRy*newRy > Threshold*Threshold ||
+                        newGx*newGx + newGy*newGy > Threshold*Threshold ||
+                        newBx*newBx + newBy*newBy > Threshold*Threshold
                             ? Color.Black : Color.White);
                 }
             }

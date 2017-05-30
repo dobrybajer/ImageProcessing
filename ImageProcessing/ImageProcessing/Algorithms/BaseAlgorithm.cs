@@ -23,7 +23,7 @@
 
         protected int NumberOfEdgePixels;
 
-        protected const int MagnitudeLimit = 50;
+        protected const int Threshold = 50;
 
         protected double[,] Kernel1 { get; set; }
 
@@ -224,7 +224,7 @@
 
             var currentPixelPos = (y*srcData.Width + x)*srcData.BytesPerPixel;
 
-            if (clampedValue <= MagnitudeLimit)
+            if (clampedValue <= Threshold)
             {
                 dst[currentPixelPos] = Color.Black.R;
                 dst[currentPixelPos + 1] = Color.Black.G;
@@ -241,7 +241,7 @@
             //dst[currentPixelPos + 1] = clampedValue;
             //dst[currentPixelPos + 2] = clampedValue;
 
-            return clampedValue > MagnitudeLimit ? 1 : 0;
+            return clampedValue > Threshold ? 1 : 0;
         }
 
         #endregion
