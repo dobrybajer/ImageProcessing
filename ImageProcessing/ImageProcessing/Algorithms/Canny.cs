@@ -6,8 +6,6 @@
     using Point = System.Drawing.Point;
 
     using Model;
-
-    using OpenCvSharp;
     
     internal class Canny : BaseAlgorithm
     {
@@ -17,15 +15,6 @@
 
         public override Bitmap ProcessImage(Bitmap image)
         {          
-            //var src = new Mat("C:\\Users\\Lukasz\\Documents\\GitHub\\ImageProcessing\\ImageProcessing\\Input\\DSC_9509.JPG", ImreadModes.GrayScale);
-            //var dst = new Mat();
-            //Cv2.Canny(src, dst, 50, 200);
-            //using (new Window("src image", src))
-            //using (new Window("dst image", dst))
-            //{
-            //    Cv2.WaitKey();
-            //}
-
             return Canny2(image);
         }
 
